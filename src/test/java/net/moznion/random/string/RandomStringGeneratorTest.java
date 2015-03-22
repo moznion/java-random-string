@@ -26,11 +26,11 @@ public class RandomStringGeneratorTest {
   @Test
   public void shouldGenerateRandomStringFromRegex() {
     RandomStringGenerator generator = new RandomStringGenerator();
-    String randomString = generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.");
+    String randomString = generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S");
     Pattern patternToProve =
         Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
             + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
-            + "a\\{0,3}.");
+            + "a\\{0,3}.[ \t].");
     assertTrue(patternToProve.matcher(randomString).find());
   }
 

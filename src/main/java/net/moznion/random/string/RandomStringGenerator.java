@@ -18,13 +18,13 @@ public class RandomStringGenerator {
   private static final RandomLetterPicker LOWER_CASE = RandomLetterPicker.builder()
       .addAllByEnum(LowerCaseLetter.class)
       .build();
-  private static final RandomLetterPicker NUMERIC = RandomLetterPicker.builder()
+  private static final RandomLetterPicker DIGIT = RandomLetterPicker.builder()
       .addAllByEnum(DigitLetter.class)
       .build();
   private static final RandomLetterPicker SYMBOL = RandomLetterPicker.builder()
       .addAllByEnum(SymbolLetter.class)
       .build();
-  private static final RandomLetterPicker ASCII = RandomLetterPicker.builder()
+  private static final RandomLetterPicker ANY = RandomLetterPicker.builder()
       .addAllByEnum(UpperCaseLetter.class)
       .addAllByEnum(LowerCaseLetter.class)
       .addAllByEnum(DigitLetter.class)
@@ -52,10 +52,14 @@ public class RandomStringGenerator {
       .addAllByEnum(SymbolLetter.class)
       .remove("_")
       .build();
-  private static final RandomLetterPicker NOT_NUMERIC = RandomLetterPicker.builder()
+  private static final RandomLetterPicker NOT_DIGIT = RandomLetterPicker.builder()
       .addAllByEnum(UpperCaseLetter.class)
       .addAllByEnum(LowerCaseLetter.class)
       .addAllByEnum(SymbolLetter.class)
+      .build();
+  private static final RandomLetterPicker SPACE = RandomLetterPicker.builder()
+      .add(" ")
+      .add("\t")
       .build();
 
   public RandomStringGenerator() {
@@ -77,13 +81,13 @@ public class RandomStringGenerator {
           picker = UPPER_CASE;
           break;
         case "n":
-          picker = NUMERIC;
+          picker = DIGIT;
           break;
         case "!":
           picker = SYMBOL;
           break;
         case ".":
-          picker = ASCII;
+          picker = ANY;
           break;
         case "s":
           picker = SALT;
@@ -122,13 +126,19 @@ public class RandomStringGenerator {
               candidatePicker = WORD;
               break;
             case "d":
-              candidatePicker = NUMERIC;
+              candidatePicker = DIGIT;
               break;
             case "W":
               candidatePicker = NOT_WORD;
               break;
             case "D":
-              candidatePicker = NOT_NUMERIC;
+              candidatePicker = NOT_DIGIT;
+              break;
+            case "s":
+              candidatePicker = SPACE;
+              break;
+            case "S":
+              candidatePicker = ANY;
               break;
             default:
               candidateCharacter = character;
@@ -137,7 +147,7 @@ public class RandomStringGenerator {
         // case "[":
         // break;
         case ".":
-          candidatePicker = ASCII;
+          candidatePicker = ANY;
           break;
         default:
           candidateCharacter = character;
