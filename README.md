@@ -1,7 +1,7 @@
-random-string
+random-string [![Build Status](https://travis-ci.org/moznion/java-random-string.svg)](https://travis-ci.org/moznion/java-random-string)
 =============
 
-TBD
+Generate random strings based on a pattern.
 
 Synopsis
 ---
@@ -23,7 +23,7 @@ License
 
 ```
 The MIT License (MIT)
-Copyright © 2014 moznion, http://moznion.net/ <moznion@gmail.com>
+Copyright © 2015 moznion, http://moznion.net/ <moznion@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the “Software”), to deal
