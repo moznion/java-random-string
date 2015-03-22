@@ -6,12 +6,29 @@ Generate random strings based on a pattern.
 Synopsis
 ---
 
-TBD
+### From pattern
+
+```java
+RandomStringGenerator generator = new RandomStringGenerator();
+
+// generates random string (e.g. "aB4@X.Ç")
+String randomString = generator.generateFromPattern("cCn!.sb");
+```
+
+### From regex
+
+```java
+RandomStringGenerator generator = new RandomStringGenerator();
+
+// generates random string (e.g. "a5B123 18X")
+String randomString = generator.generateByRegex("\\w+\\d*\\s[0-9]{0,3}X");
+```
 
 Description
 --
 
-TBD
+Generate random string based on a patter.
+This library is port of [String::Random](https://metacpan.org/pod/String::Random) from Perl to Java.
 
 Author
 --

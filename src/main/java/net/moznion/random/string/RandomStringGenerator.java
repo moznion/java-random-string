@@ -12,22 +12,66 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Generator of random string.
+ * 
+ * @author moznion
+ *
+ */
 public class RandomStringGenerator {
-  private final int maxRandomNum;
+  private int numOfUpperLimit;
   private final Map<String, RandomLetterPicker> definedPickers;
 
   private static final Random RANDOM = new Random();
 
+  /**
+   * Instantiate generator with number of upper limit for quantifiers.
+   * 
+   * @param numOfUpperLimit Number of upper limit for quantifiers
+   */
+  public RandomStringGenerator(int numOfUpperLimit) {
+    this.numOfUpperLimit = numOfUpperLimit;
+    this.definedPickers = new HashMap<>();
+  }
+
+  /**
+   * Instantiate generator with default number of upper limit for quantifiers (default value: 10).
+   */
   public RandomStringGenerator() {
     this(10);
   }
 
-  public RandomStringGenerator(int maxRandomNum) {
-    this.maxRandomNum = maxRandomNum;
-    this.definedPickers = new HashMap<>();
-  }
-
-  public String generateByPattern(final String pattern) {
+  /**
+   * Generate random string from pattern.
+   * 
+   * <p>
+   * You can use following characters as pattern.
+   * <ul>
+   * <li>{@code c} : Any Latin lower-case character</li>
+   * <li>{@code C} : Any Latin upper-case character</li>
+   * <li>{@code n} : Any digit {@code [0-9]}</li>
+   * <li>{@code !} : A symbol character {@code [~`!@$%^&*()-_+= []|\:;"'.<>?/#,]}</li>
+   * <li>{@code .} : Any of the above</li>
+   * <li>{@code s} : A "salt" character {@code [A-Za-z0-9./]}</li>
+   * <li>{@code b} : An ASCIII character which has code from 0 to 255</li>
+   * </ul>
+   * 
+   * <p>
+   * e.g.
+   * 
+   * <pre>
+   * <code>
+   * RandomStringGenerator generator = new RandomStringGenerator();
+   * 
+   * // generates random string (e.g. "aB4@X.Ç")
+   * String randomString = generator.generateFromPattern(&quot;cCn!.sb&quot;);
+   * </code>
+   * </pre>
+   * 
+   * @param pattern Pattern string
+   * @return Random string which is generated according to pattern
+   */
+  public String generateFromPattern(final String pattern) {
     return Arrays.stream(pattern.split("")).map(patternCharacter -> {
       RandomLetterPicker picker;
       switch (patternCharacter) {
@@ -59,8 +103,43 @@ public class RandomStringGenerator {
     }).collect(Collectors.joining());
   }
 
+  /**
+   * Generate random string from regular expression.
+   * 
+   * <p>
+   * You can use following meta characters as regex.
+   * <ul>
+   * <li>{@code \w} : Alphanumeric + "_" {@code [A-Za-z0-9_]}</li>
+   * <li>{@code \d} : Digits {@code [0-9]}</li>
+   * <li>{@code \W} : Printable characters other than those in \w</li>
+   * <li>{@code \D} : Printable characters other than those in \d</li>
+   * <li>{@code \s} : Whitespace characters {@code [ \t]}</li>
+   * <li>{@code \S} : Printable characters</li>
+   * <li>{@code .} :  Printable characters</li>
+   * <li>{@code []} : Character classes (Example of usage {@code [a-zA-Z]})</li>
+   * <li>{@code {}} : Repetition</li>
+   * <li>{@code *} : Same as {0,}</li>
+   * <li>{@code ?} : Same as {0,1}</li>
+   * <li>{@code +} : Same as {1,}</li>
+   * </ul>
+   * 
+   * <p>
+   * e.g.
+   * 
+   * <pre>
+   * <code>
+   * RandomStringGenerator generator = new RandomStringGenerator();
+   * 
+   * // generates random string (e.g. "a5B123 18X")
+   * String randomString = generator.generateByRegex("\\w+\\d*\\s[0-9]{0,3}X");
+   * </code>
+   * </pre>
+   * 
+   * @param regex Pattern based on regular expression
+   * @return Random String
+   */
   public String generateByRegex(final String regex) {
-    String expanded = expandQuantifiers(regex);
+    String expanded = normalizeQuantifiers(regex);
 
     final String[] regexCharacters = expanded.split("");
     final int length = regexCharacters.length;
@@ -189,6 +268,24 @@ public class RandomStringGenerator {
     return sb.toString();
   }
 
+  /**
+   * Get number of upper limit for quantifiers.
+   * 
+   * @return Number of upper limit for quantifiers
+   */
+  public int getNumOfUpperLimit() {
+    return numOfUpperLimit;
+  }
+
+  /**
+   * Set number of upper limit for quantifiers.
+   * 
+   * @param numOfUpperLimit Number of upper limit for quantifiers
+   */
+  public void setNumOfUpperLimit(int numOfUpperLimit) {
+    this.numOfUpperLimit = numOfUpperLimit;
+  }
+
   // for repetition quantifier, e.g. {1,4}
   private static final Pattern REPETITION_QUANTIFIER_RE =
       Pattern.compile("([^\\\\])\\{([0-9]+),([0-9]+)\\}");
@@ -196,7 +293,7 @@ public class RandomStringGenerator {
   private static final Pattern PLUS_QUANTIFIER_RE = Pattern.compile("([^\\\\])\\+");
   private static final Pattern QUESTION_QUANTIFIER_RE = Pattern.compile("([^\\\\])\\?");
 
-  private String expandQuantifiers(final String regex) {
+  private String normalizeQuantifiers(final String regex) {
     String expanded = regex;
 
     Matcher repetitionMatcher = REPETITION_QUANTIFIER_RE.matcher(expanded);
@@ -216,7 +313,7 @@ public class RandomStringGenerator {
     while (asteriskMatcher.find()) {
       expanded =
           asteriskMatcher.replaceFirst(asteriskMatcher.group(1) + "{"
-              + getRandomNumAsString(0, maxRandomNum) + "}");
+              + getRandomNumAsString(0, numOfUpperLimit) + "}");
       asteriskMatcher = ASTERISK_QUANTIFIER_RE.matcher(expanded);
     }
     //
@@ -224,7 +321,7 @@ public class RandomStringGenerator {
     while (plusMatcher.find()) {
       expanded =
           plusMatcher.replaceFirst(plusMatcher.group(1) + "{"
-              + getRandomNumAsString(1, maxRandomNum) + "}");
+              + getRandomNumAsString(1, numOfUpperLimit) + "}");
       plusMatcher = PLUS_QUANTIFIER_RE.matcher(expanded);
     }
 

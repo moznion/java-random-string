@@ -10,7 +10,7 @@ public class RandomStringGeneratorTest {
   @Test
   public void shouldGenerateRandomStringFromPattern() {
     RandomStringGenerator generator = new RandomStringGenerator();
-    String randomString = generator.generateByPattern("cCn!.sb");
+    String randomString = generator.generateFromPattern("cCn!.sb");
     Pattern patternToProve =
         Pattern.compile("^[a-z][A-Z][0-9][~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]"
             + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]"
@@ -20,7 +20,7 @@ public class RandomStringGeneratorTest {
 
   @Test(expected = RuntimeException.class)
   public void shouldOccurExceptionWhenItIsWithInvalidPatternChar() {
-    new RandomStringGenerator().generateByPattern("cCn?.sb");
+    new RandomStringGenerator().generateFromPattern("cCn?.sb");
   }
 
   @Test
