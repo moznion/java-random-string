@@ -8,8 +8,8 @@
 	<packaging>jar</packaging>
 
 	<name>random-string</name>
-	<description></description>
-	<url></url>
+	<description>Generate random strings based on a pattern</description>
+	<url>https://github.com/moznion/java-random-string</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -162,9 +162,9 @@
 	</distributionManagement>
 
 	<scm>
-		<url></url>
-		<connection>scm:git:</connection>
-		<developerConnection>scm:git:</developerConnection>
+		<url>https://github.com/moznion/java-random-string</url>
+		<connection>scm:git:git@github.com:moznion/java-random-string.git</connection>
+		<developerConnection>scm:git:git@github.com:moznion/java-random-string.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
