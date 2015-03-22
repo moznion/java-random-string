@@ -28,9 +28,9 @@ public class RandomStringGenerator {
   }
 
   public String generateByPattern(final String pattern) {
-    return Arrays.stream(pattern.split("")).map(patternChar -> {
+    return Arrays.stream(pattern.split("")).map(patternCharacter -> {
       RandomLetterPicker picker;
-      switch (patternChar) {
+      switch (patternCharacter) {
         case "c":
           picker = RandomLetterPickers.LOWER_CASE.getPicker();
           break;
@@ -53,7 +53,7 @@ public class RandomStringGenerator {
           picker = RandomLetterPickers.BINARY.getPicker();
           break;
         default:
-          throw new RuntimeException(); // TODO write description
+          throw new RuntimeException("Detected invalid pattern character: " + patternCharacter);
       }
       return picker.pickRandomLetter();
     }).collect(Collectors.joining());
@@ -75,7 +75,7 @@ public class RandomStringGenerator {
           try {
             character = regexCharacters[++i];
           } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(); // TODO write description
+            throw new RuntimeException("Detected invalid escape character");
           }
 
           switch (character) {
@@ -114,7 +114,8 @@ public class RandomStringGenerator {
                 buffer.add(endCharacter);
               } else {
                 if (String.valueOf(character).matches("\\W")) {
-                  throw new RuntimeException(); // TODO write description
+                  throw new RuntimeException("'" + character + "'"
+                      + "will be treated literally inside []");
                 }
                 buffer.add(character);
               }
@@ -128,7 +129,7 @@ public class RandomStringGenerator {
                 int beginCode = (int) buffer.get(j).charAt(0);
                 int endCode = (int) buffer.get(j + 1).charAt(0);
                 if (beginCode > endCode) {
-                  throw new RuntimeException(); // TODO write description
+                  throw new RuntimeException("Detected invalid character range: " + character);
                 }
                 for (int k = beginCode; k <= endCode; k++) {
                   definedPickerBuilder.add(String.valueOf((char) k));
@@ -138,7 +139,7 @@ public class RandomStringGenerator {
               picker = definedPickers.get(key);
             }
           } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(); // TODO write description
+            throw new RuntimeException("Occurs parsing error");
           }
           break;
         case ".":
@@ -203,7 +204,7 @@ public class RandomStringGenerator {
       int start = Integer.parseInt(repetitionMatcher.group(2), 10);
       int end = Integer.parseInt(repetitionMatcher.group(3), 10);
       if (end - start < 0) {
-        throw new RuntimeException(); // TODO write description
+        throw new RuntimeException("Detected invalid quantifier: " + "{" + start + "," + end + "}");
       }
       expanded =
           repetitionMatcher.replaceFirst(repetitionMatcher.group(1) + "{"
