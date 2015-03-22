@@ -5,22 +5,58 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RandomStringGenerator {
   private final int maxRandomNum;
 
   private static final Random RANDOM = new Random();
 
-  private static final Letter UPPER_CASE = new UpperCaseLetter();
-  private static final Letter LOWER_CASE = new LowerCaseLetter();
-  private static final Letter NUMERIC = new NumericLetter();
-  private static final Letter SYMBOL = new SymbolLetter();
-  private static final Letter ASCII = new ASCIILetter();
-  private static final Letter SALT = new SaltLetter();
-  private static final Letter BINARY = new BinaryLetter();
-  private static final Letter WORD = new WordLetter();
-  private static final Letter NOT_WORD = new NotWordLetter();
-  private static final Letter NOT_NUMERIC = new NotNumericLetter();
+  private static final RandomLetterPicker UPPER_CASE = RandomLetterPicker.builder()
+      .addAllByEnum(UpperCaseLetter.class)
+      .build();
+  private static final RandomLetterPicker LOWER_CASE = RandomLetterPicker.builder()
+      .addAllByEnum(LowerCaseLetter.class)
+      .build();
+  private static final RandomLetterPicker NUMERIC = RandomLetterPicker.builder()
+      .addAllByEnum(DigitLetter.class)
+      .build();
+  private static final RandomLetterPicker SYMBOL = RandomLetterPicker.builder()
+      .addAllByEnum(SymbolLetter.class)
+      .build();
+  private static final RandomLetterPicker ASCII = RandomLetterPicker.builder()
+      .addAllByEnum(UpperCaseLetter.class)
+      .addAllByEnum(LowerCaseLetter.class)
+      .addAllByEnum(DigitLetter.class)
+      .addAllByEnum(SymbolLetter.class)
+      .build();
+  private static final RandomLetterPicker SALT = RandomLetterPicker.builder()
+      .addAllByEnum(UpperCaseLetter.class)
+      .addAllByEnum(LowerCaseLetter.class)
+      .addAllByEnum(DigitLetter.class)
+      .add(".")
+      .add("/")
+      .build();
+  private static final RandomLetterPicker BINARY = RandomLetterPicker.builder()
+      .addAll(IntStream.range(0, 255)
+          .mapToObj(i -> Character.toString((char) i))
+          .collect(Collectors.toList()))
+      .build();
+  private static final RandomLetterPicker WORD = RandomLetterPicker.builder()
+      .addAllByEnum(UpperCaseLetter.class)
+      .addAllByEnum(LowerCaseLetter.class)
+      .addAllByEnum(DigitLetter.class)
+      .add("_")
+      .build();
+  private static final RandomLetterPicker NOT_WORD = RandomLetterPicker.builder()
+      .addAllByEnum(SymbolLetter.class)
+      .remove("_")
+      .build();
+  private static final RandomLetterPicker NOT_NUMERIC = RandomLetterPicker.builder()
+      .addAllByEnum(UpperCaseLetter.class)
+      .addAllByEnum(LowerCaseLetter.class)
+      .addAllByEnum(SymbolLetter.class)
+      .build();
 
   public RandomStringGenerator() {
     this(10);
@@ -32,33 +68,33 @@ public class RandomStringGenerator {
 
   public String generateByPattern(final String pattern) {
     return Arrays.stream(pattern.split("")).map(patternChar -> {
-      Letter letter;
+      RandomLetterPicker picker;
       switch (patternChar) {
         case "c":
-          letter = LOWER_CASE;
+          picker = LOWER_CASE;
           break;
         case "C":
-          letter = UPPER_CASE;
+          picker = UPPER_CASE;
           break;
         case "n":
-          letter = NUMERIC;
+          picker = NUMERIC;
           break;
         case "!":
-          letter = SYMBOL;
+          picker = SYMBOL;
           break;
         case ".":
-          letter = ASCII;
+          picker = ASCII;
           break;
         case "s":
-          letter = SALT;
+          picker = SALT;
           break;
         case "b":
-          letter = BINARY;
+          picker = BINARY;
           break;
         default:
           throw new RuntimeException(); // TODO write description
       }
-      return letter.getRandomLetter();
+      return picker.getRandomLetter();
     }).collect(Collectors.joining());
   }
 
@@ -71,7 +107,7 @@ public class RandomStringGenerator {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < length; i++) {
       String character = regexCharacters[i];
-      Letter candidate = null;
+      RandomLetterPicker candidatePicker = null;
       String candidateCharacter = null;
       switch (character) {
         case "\\":
@@ -83,16 +119,16 @@ public class RandomStringGenerator {
 
           switch (character) {
             case "w":
-              candidate = WORD;
+              candidatePicker = WORD;
               break;
             case "d":
-              candidate = NUMERIC;
+              candidatePicker = NUMERIC;
               break;
             case "W":
-              candidate = NOT_WORD;
+              candidatePicker = NOT_WORD;
               break;
             case "D":
-              candidate = NOT_NUMERIC;
+              candidatePicker = NOT_NUMERIC;
               break;
             default:
               candidateCharacter = character;
@@ -101,7 +137,7 @@ public class RandomStringGenerator {
         // case "[":
         // break;
         case ".":
-          candidate = ASCII;
+          candidatePicker = ASCII;
           break;
         default:
           candidateCharacter = character;
@@ -131,9 +167,9 @@ public class RandomStringGenerator {
         }
       }
 
-      if (candidate != null) {
+      if (candidatePicker != null) {
         for (int j = 0; j < repetitionNum; j++) {
-          sb.append(candidate.getRandomLetter());
+          sb.append(candidatePicker.getRandomLetter());
         }
       } else if (candidateCharacter != null) {
         for (int j = 0; j < repetitionNum; j++) {

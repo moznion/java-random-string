@@ -1,24 +1,19 @@
 package net.moznion.random.string;
 
-import lombok.Getter;
+enum UpperCaseLetter implements Letter {
+  A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G"), H("H"),
+  I("I"), J("J"), K("K"), L("L"), M("M"), N("N"), O("O"), P("P"),
+  Q("Q"), R("R"), S("S"), T("T"), U("U"), V("V"), W("W"), X("X"),
+  Y("Y"), Z("Z");
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+  private final String letter;
 
-class UpperCaseLetter implements Letter {
-  @Getter
-  private static final List<String> VALUES = Collections.unmodifiableList(Arrays.asList(
-      "A", "B", "C", "D", "E", "F", "G", "H",
-      "I", "J", "K", "L", "M", "N", "O", "P",
-      "Q", "R", "S", "T", "U", "V", "W", "X",
-      "Y", "Z"));
-  private static final int SIZE = VALUES.size();
-  private static final Random RANDOM = new Random();
+  private UpperCaseLetter(String letter) {
+    this.letter = letter;
+  }
 
   @Override
-  public String getRandomLetter() {
-    return VALUES.get(RANDOM.nextInt(SIZE)).toString();
+  public String getLetter() {
+    return letter;
   }
 }

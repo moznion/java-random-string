@@ -1,24 +1,20 @@
 package net.moznion.random.string;
 
-import lombok.Getter;
+enum SymbolLetter implements Letter {
+  TILDE("~"), BACKTICK("`"), EXCLAMATION("!"), AT("@"), DOLLER("$"), PERCENT("%"), CAP("^"),
+  AND("&"), ASTERISK("*"), LPAREN("("), RPAREN(")"), MINUS("-"), UNDERBAR("_"), PLUS("+"),
+  EQUAL("="), LBRACE("{"), RBRACE("}"), LBRACKET("["), RBRACKET("]"), PIPE("|"), COLON(":"),
+  SEMICOLON(";"), SINGLEQUOTE("'"), DOT("."), LANGLE("<"), RANGLE(">"), QUESTION("?"),
+  SLASH("/"), SHARP("#"), COMMA(","), BACKSLASH("\\"), DOUBLEQUOTE("\"");
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+  private final String letter;
 
-class SymbolLetter implements Letter {
-  @Getter
-  private static final List<String> VALUES = Collections.unmodifiableList(Arrays.asList(
-      "~", "`", "!", "@", "$", "%", "^", "&",
-      "*", "(", ")", "-", "_", "+", "=", "{",
-      "}", "[", "]", "|", ":", ";", "'", ".",
-      "<", ">", "?", "/", "#", ",", "\\", "\""));
-  private static final int SIZE = VALUES.size();
-  private static final Random RANDOM = new Random();
+  private SymbolLetter(String letter) {
+    this.letter = letter;
+  }
 
   @Override
-  public String getRandomLetter() {
-    return VALUES.get(RANDOM.nextInt(SIZE)).toString();
+  public String getLetter() {
+    return letter;
   }
 }
