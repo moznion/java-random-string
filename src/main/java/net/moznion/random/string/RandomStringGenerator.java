@@ -5,62 +5,11 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class RandomStringGenerator {
   private final int maxRandomNum;
 
   private static final Random RANDOM = new Random();
-
-  private static final RandomLetterPicker UPPER_CASE = RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .build();
-  private static final RandomLetterPicker LOWER_CASE = RandomLetterPicker.builder()
-      .addAllByEnum(LowerCaseLetter.class)
-      .build();
-  private static final RandomLetterPicker DIGIT = RandomLetterPicker.builder()
-      .addAllByEnum(DigitLetter.class)
-      .build();
-  private static final RandomLetterPicker SYMBOL = RandomLetterPicker.builder()
-      .addAllByEnum(SymbolLetter.class)
-      .build();
-  private static final RandomLetterPicker ANY = RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .addAllByEnum(SymbolLetter.class)
-      .build();
-  private static final RandomLetterPicker SALT = RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .add(".")
-      .add("/")
-      .build();
-  private static final RandomLetterPicker BINARY = RandomLetterPicker.builder()
-      .addAll(IntStream.range(0, 255)
-          .mapToObj(i -> Character.toString((char) i))
-          .collect(Collectors.toList()))
-      .build();
-  private static final RandomLetterPicker WORD = RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .add("_")
-      .build();
-  private static final RandomLetterPicker NOT_WORD = RandomLetterPicker.builder()
-      .addAllByEnum(SymbolLetter.class)
-      .remove("_")
-      .build();
-  private static final RandomLetterPicker NOT_DIGIT = RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(SymbolLetter.class)
-      .build();
-  private static final RandomLetterPicker SPACE = RandomLetterPicker.builder()
-      .add(" ")
-      .add("\t")
-      .build();
 
   public RandomStringGenerator() {
     this(10);
@@ -75,25 +24,25 @@ public class RandomStringGenerator {
       RandomLetterPicker picker;
       switch (patternChar) {
         case "c":
-          picker = LOWER_CASE;
+          picker = RandomLetterPickers.LOWER_CASE.getPicker();
           break;
         case "C":
-          picker = UPPER_CASE;
+          picker = RandomLetterPickers.UPPER_CASE.getPicker();
           break;
         case "n":
-          picker = DIGIT;
+          picker = RandomLetterPickers.DIGIT.getPicker();
           break;
         case "!":
-          picker = SYMBOL;
+          picker = RandomLetterPickers.SYMBOL.getPicker();
           break;
         case ".":
-          picker = ANY;
+          picker = RandomLetterPickers.ANY.getPicker();
           break;
         case "s":
-          picker = SALT;
+          picker = RandomLetterPickers.SALT.getPicker();
           break;
         case "b":
-          picker = BINARY;
+          picker = RandomLetterPickers.BINARY.getPicker();
           break;
         default:
           throw new RuntimeException(); // TODO write description
@@ -123,22 +72,22 @@ public class RandomStringGenerator {
 
           switch (character) {
             case "w":
-              candidatePicker = WORD;
+              candidatePicker = RandomLetterPickers.WORD.getPicker();
               break;
             case "d":
-              candidatePicker = DIGIT;
+              candidatePicker = RandomLetterPickers.DIGIT.getPicker();
               break;
             case "W":
-              candidatePicker = NOT_WORD;
+              candidatePicker = RandomLetterPickers.NOT_WORD.getPicker();
               break;
             case "D":
-              candidatePicker = NOT_DIGIT;
+              candidatePicker = RandomLetterPickers.NOT_DIGIT.getPicker();
               break;
             case "s":
-              candidatePicker = SPACE;
+              candidatePicker = RandomLetterPickers.SPACE.getPicker();
               break;
             case "S":
-              candidatePicker = ANY;
+              candidatePicker = RandomLetterPickers.ANY.getPicker();
               break;
             default:
               candidateCharacter = character;
@@ -147,7 +96,7 @@ public class RandomStringGenerator {
         // case "[":
         // break;
         case ".":
-          candidatePicker = ANY;
+          candidatePicker = RandomLetterPickers.ANY.getPicker();
           break;
         default:
           candidateCharacter = character;
