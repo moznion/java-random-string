@@ -1,4 +1,4 @@
-random-string [![Build Status](https://travis-ci.org/moznion/java-random-string.svg)](https://travis-ci.org/moznion/java-random-string)
+random-string [![Build Status](https://travis-ci.org/moznion/java-random-string.svg)](https://travis-ci.org/moznion/java-random-string) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string) [![javadoc.io](https://javadocio-badges.herokuapp.com/net.moznion/random-string/badge.svg)](https://javadocio-badges.herokuapp.com/net.moznion/random-string)
 =============
 
 Generate random strings based on a pattern.
@@ -29,6 +29,13 @@ Description
 
 Generate random string based on a patter.
 This library is port of [String::Random](https://metacpan.org/pod/String::Random) from Perl to Java.
+
+Methods
+--
+
+Please refer to javadoc.
+
+[![javadoc.io](https://javadocio-badges.herokuapp.com/net.moznion/random-string/badge.svg)](https://javadocio-badges.herokuapp.com/net.moznion/random-string)
 
 Author
 --
