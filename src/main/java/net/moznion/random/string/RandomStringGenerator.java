@@ -1,6 +1,12 @@
 package net.moznion.random.string;
 
+import net.moznion.random.string.RandomLetterPicker.Builder;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class RandomStringGenerator {
   private final int maxRandomNum;
+  private final Map<String, RandomLetterPicker> definedPickers;
 
   private static final Random RANDOM = new Random();
 
@@ -17,6 +24,7 @@ public class RandomStringGenerator {
 
   public RandomStringGenerator(int maxRandomNum) {
     this.maxRandomNum = maxRandomNum;
+    this.definedPickers = new HashMap<>();
   }
 
   public String generateByPattern(final String pattern) {
@@ -60,7 +68,7 @@ public class RandomStringGenerator {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < length; i++) {
       String character = regexCharacters[i];
-      RandomLetterPicker candidatePicker = null;
+      RandomLetterPicker picker = null;
       String candidateCharacter = null;
       switch (character) {
         case "\\":
@@ -72,31 +80,69 @@ public class RandomStringGenerator {
 
           switch (character) {
             case "w":
-              candidatePicker = RandomLetterPickers.WORD.getPicker();
+              picker = RandomLetterPickers.WORD.getPicker();
               break;
             case "d":
-              candidatePicker = RandomLetterPickers.DIGIT.getPicker();
+              picker = RandomLetterPickers.DIGIT.getPicker();
               break;
             case "W":
-              candidatePicker = RandomLetterPickers.NOT_WORD.getPicker();
+              picker = RandomLetterPickers.NOT_WORD.getPicker();
               break;
             case "D":
-              candidatePicker = RandomLetterPickers.NOT_DIGIT.getPicker();
+              picker = RandomLetterPickers.NOT_DIGIT.getPicker();
               break;
             case "s":
-              candidatePicker = RandomLetterPickers.SPACE.getPicker();
+              picker = RandomLetterPickers.SPACE.getPicker();
               break;
             case "S":
-              candidatePicker = RandomLetterPickers.ANY.getPicker();
+              picker = RandomLetterPickers.ANY.getPicker();
               break;
             default:
               candidateCharacter = character;
           }
           break;
-        // case "[":
-        // break;
+        case "[":
+          List<String> buffer = new ArrayList<>();
+          try {
+            String key = "";
+            while (!(character = regexCharacters[++i]).equals("]")) {
+              // Scan string which is in brackets to determine name of key and code range
+              if (character.equals("-") && !buffer.isEmpty()) {
+                String beginCharacter = buffer.get(buffer.size() - 1);
+                String endCharacter = regexCharacters[++i];
+                key += beginCharacter + "-" + endCharacter;
+                buffer.add(endCharacter);
+              } else {
+                if (String.valueOf(character).matches("\\W")) {
+                  throw new RuntimeException(); // TODO write description
+                }
+                buffer.add(character);
+              }
+            }
+
+            if (definedPickers.get(key) == null) {
+              // build random letter picker according to determined range at above
+              Builder definedPickerBuilder = RandomLetterPicker.builder();
+              int bufferSize = buffer.size();
+              for (int j = 0; j < bufferSize; j += 2) {
+                int beginCode = (int) buffer.get(j).charAt(0);
+                int endCode = (int) buffer.get(j + 1).charAt(0);
+                if (beginCode > endCode) {
+                  throw new RuntimeException(); // TODO write description
+                }
+                for (int k = beginCode; k <= endCode; k++) {
+                  definedPickerBuilder.add(String.valueOf((char) k));
+                }
+              }
+              definedPickers.put(key, definedPickerBuilder.build());
+              picker = definedPickers.get(key);
+            }
+          } catch (ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException(); // TODO write description
+          }
+          break;
         case ".":
-          candidatePicker = RandomLetterPickers.ANY.getPicker();
+          picker = RandomLetterPickers.ANY.getPicker();
           break;
         default:
           candidateCharacter = character;
@@ -126,9 +172,9 @@ public class RandomStringGenerator {
         }
       }
 
-      if (candidatePicker != null) {
+      if (picker != null) {
         for (int j = 0; j < repetitionNum; j++) {
-          sb.append(candidatePicker.pickRandomLetter());
+          sb.append(picker.pickRandomLetter());
         }
       } else if (candidateCharacter != null) {
         for (int j = 0; j < repetitionNum; j++) {

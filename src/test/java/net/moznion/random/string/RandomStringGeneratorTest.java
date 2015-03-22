@@ -26,11 +26,11 @@ public class RandomStringGeneratorTest {
   @Test
   public void shouldGenerateRandomStringFromRegex() {
     RandomStringGenerator generator = new RandomStringGenerator();
-    String randomString = generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S");
+    String randomString = generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
     Pattern patternToProve =
         Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
             + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
-            + "a\\{0,3}.[ \t].");
+            + "a\\{0,3}.[ \t].[0-9][a-zA-Z]X$");
     assertTrue(patternToProve.matcher(randomString).find());
   }
 
@@ -38,8 +38,8 @@ public class RandomStringGeneratorTest {
   public void shouldIgnoreInvalidRange() {
     RandomStringGenerator generator = new RandomStringGenerator();
     {
-      String randomString = generator.generateByRegex("a{-1, 10}b{foo}");
-      assertTrue(randomString.equals("a{-1, 10}b{foo}"));
+      String randomString = generator.generateByRegex("a{-1,10}b{foo}");
+      assertTrue(randomString.equals("a{-1,10}b{foo}"));
     }
     {
       String randomString = generator.generateByRegex("a{");
