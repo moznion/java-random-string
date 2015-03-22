@@ -25,7 +25,8 @@ public class RandomStringGenerator {
   private static final Random RANDOM = new Random();
 
   /**
-   * Instantiate generator with number of upper limit for quantifiers.
+   * Instantiate generator with number of upper limit for regex quantifiers,
+   * for example {@code *}, {@code +} and etc.
    * 
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */
@@ -35,7 +36,8 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Instantiate generator with default number of upper limit for quantifiers (default value: 10).
+   * Instantiate generator with default number of upper limit for regex
+   * quantifiers, for example {@code *}, {@code +} and etc (default value: 10).
    */
   public RandomStringGenerator() {
     this(10);
@@ -115,9 +117,9 @@ public class RandomStringGenerator {
    * <li>{@code \D} : Printable characters other than those in \d</li>
    * <li>{@code \s} : Whitespace characters {@code [ \t]}</li>
    * <li>{@code \S} : Printable characters</li>
-   * <li>{@code .} :  Printable characters</li>
+   * <li>{@code .} : Printable characters</li>
    * <li>{@code []} : Character classes (Example of usage {@code [a-zA-Z]})</li>
-   * <li>{@code {}} : Repetition</li>
+   * <li>{@code : Repetition</li>
    * <li>{@code *} : Same as {0,}</li>
    * <li>{@code ?} : Same as {0,1}</li>
    * <li>{@code +} : Same as {1,}</li>
@@ -261,7 +263,7 @@ public class RandomStringGenerator {
           sb.append(candidateCharacter);
         }
       } else {
-        throw new RuntimeException();
+        throw new RuntimeException("Occurs parsing error");
       }
     }
 
@@ -269,7 +271,8 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Get number of upper limit for quantifiers.
+   * Get number of upper limit for regex quantifiers,
+   * for example {@code *}, {@code +} and etc.
    * 
    * @return Number of upper limit for quantifiers
    */
@@ -278,7 +281,8 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Set number of upper limit for quantifiers.
+   * Set number of upper limit for regex quantifiers,
+   * for example {@code *}, {@code +} and etc.
    * 
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */

@@ -1,5 +1,6 @@
 package net.moznion.random.string;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -26,7 +27,8 @@ public class RandomStringGeneratorTest {
   @Test
   public void shouldGenerateRandomStringFromRegex() {
     RandomStringGenerator generator = new RandomStringGenerator();
-    String randomString = generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
+    String randomString =
+        generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
     Pattern patternToProve =
         Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
             + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
@@ -55,5 +57,35 @@ public class RandomStringGeneratorTest {
   @Test(expected = RuntimeException.class)
   public void shouldOccurExceptionWhenExistsInvalidEscapeCharacter() {
     new RandomStringGenerator().generateByRegex("foo\\");
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void shouldOccurExceptionWhenUsingInvalidRangeChar() {
+    new RandomStringGenerator().generateByRegex("[$-%]");
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void shouldOccurExceptionWhenUsingInvalidRangeOrder() {
+    new RandomStringGenerator().generateByRegex("[z-a]");
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void shouldOccurExceptionWhenRangeNotationIsNotClosed() {
+    new RandomStringGenerator().generateByRegex("[a-");
+  }
+
+  @Test
+  public void shouldSetAndGetNumOfUpperLimitSuccessfully() {
+    RandomStringGenerator generator = new RandomStringGenerator();
+    generator.setNumOfUpperLimit(0);
+    assertEquals(0, generator.getNumOfUpperLimit());
+    assertEquals("XX", generator.generateByRegex("X.*X"));
+  }
+
+  @Test
+  public void shouldSetNumOfUpperLimitSuccessfullyByConstructor() {
+    RandomStringGenerator generator = new RandomStringGenerator(0);
+    assertEquals(0, generator.getNumOfUpperLimit());
+    assertEquals("XX", generator.generateByRegex("X.*X"));
   }
 }
