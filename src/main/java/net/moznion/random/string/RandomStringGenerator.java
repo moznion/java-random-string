@@ -98,7 +98,7 @@ public class RandomStringGenerator {
         default:
           throw new RuntimeException(); // TODO write description
       }
-      return picker.getRandomLetter();
+      return picker.pickRandomLetter();
     }).collect(Collectors.joining());
   }
 
@@ -179,7 +179,7 @@ public class RandomStringGenerator {
 
       if (candidatePicker != null) {
         for (int j = 0; j < repetitionNum; j++) {
-          sb.append(candidatePicker.getRandomLetter());
+          sb.append(candidatePicker.pickRandomLetter());
         }
       } else if (candidateCharacter != null) {
         for (int j = 0; j < repetitionNum; j++) {
