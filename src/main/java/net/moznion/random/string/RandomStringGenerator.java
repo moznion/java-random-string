@@ -119,7 +119,7 @@ public class RandomStringGenerator {
    * <li>{@code \S} : Printable characters</li>
    * <li>{@code .} : Printable characters</li>
    * <li>{@code []} : Character classes (Example of usage {@code [a-zA-Z]})</li>
-   * <li>{@code : Repetition</li>
+   * <li>{@code {}}: Repetition</li>
    * <li>{@code *} : Same as {0,}</li>
    * <li>{@code ?} : Same as {0,1}</li>
    * <li>{@code +} : Same as {1,}</li>
