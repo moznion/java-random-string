@@ -62,7 +62,7 @@ class RandomLetterPicker {
     random = new Random();
   }
 
-  public String getRandomLetter() {
+  public String pickRandomLetter() {
     return letters.get(random.nextInt(size));
   }
 }
