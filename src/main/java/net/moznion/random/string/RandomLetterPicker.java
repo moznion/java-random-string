@@ -76,4 +76,25 @@ class RandomLetterPicker {
   public String pickRandomLetter() {
     return letters.get(random.nextInt(size));
   }
+
+  public static RandomLetterPicker constructByCharacterRange(final List<String> bounds) {
+    Builder definedPickerBuilder = builder();
+    int bufferSize = bounds.size();
+
+    for (int i = 0; i < bufferSize; i += 2) {
+      int beginCode = (int) bounds.get(i).charAt(0);
+      int endCode = (int) bounds.get(i + 1).charAt(0);
+
+      if (beginCode > endCode) {
+        throw new RuntimeException("Detected invalid character range: ["
+            + (char) beginCode + "-" + (char) endCode + "]");
+      }
+
+      for (int code = beginCode; code <= endCode; code++) {
+        definedPickerBuilder.add(String.valueOf((char) code));
+      }
+    }
+
+    return definedPickerBuilder.build();
+  }
 }

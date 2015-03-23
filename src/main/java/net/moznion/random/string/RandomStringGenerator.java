@@ -1,13 +1,9 @@
 package net.moznion.random.string;
 
-import lombok.Getter;
+import net.moznion.random.string.UserDefinedLetterPickerScanner.ScannedUserDefinedPicker;
 
-import net.moznion.random.string.RandomLetterPicker.Builder;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -215,12 +211,15 @@ public class RandomStringGenerator {
           break;
         case "[":
           try {
-            ScannedUserDefinedPicker scannedUserDefinedPicker = scanUserDefinedPicker(regexCharacters, i);
+            ScannedUserDefinedPicker scannedUserDefinedPicker =
+                UserDefinedLetterPickerScanner.scan(regexCharacters, i);
             String key = scannedUserDefinedPicker.getKey();
             i = scannedUserDefinedPicker.getCursor();
 
             if (userDefinedPickers.get(key) == null) {
-              registerUserDefinedPicker(key, scannedUserDefinedPicker.getScanned());
+              RandomLetterPicker userDefinedPicker = RandomLetterPicker
+                  .constructByCharacterRange(scannedUserDefinedPicker.getBounds());
+              userDefinedPickers.put(key, userDefinedPicker);
             }
 
             picker = userDefinedPickers.get(key);
@@ -350,64 +349,4 @@ public class RandomStringGenerator {
     }
     return Integer.toString(random.nextInt(bound + 1) + start, 10);
   }
-
-  @Getter
-  private static class ScannedUserDefinedPicker {
-    private final int cursor;
-    private final String key;
-    private final List<String> scanned;
-
-    public ScannedUserDefinedPicker(int cursorForScanning, String key, List<String> scanned) {
-      this.cursor = cursorForScanning;
-      this.key = key;
-      this.scanned = scanned;
-    }
-  }
-
-  private void registerUserDefinedPicker(String key, List<String> buffer) {
-    Builder definedPickerBuilder = RandomLetterPicker.builder();
-    int bufferSize = buffer.size();
-
-    for (int i = 0; i < bufferSize; i += 2) {
-      int beginCode = (int) buffer.get(i).charAt(0);
-      int endCode = (int) buffer.get(i + 1).charAt(0);
-      if (beginCode > endCode) {
-        throw new RuntimeException("Detected invalid character range: ["
-            + (char) beginCode + "-" + (char) endCode + "]");
-      }
-
-      for (int code = beginCode; code <= endCode; code++) {
-        definedPickerBuilder.add(String.valueOf((char) code));
-      }
-    }
-
-    userDefinedPickers.put(key, definedPickerBuilder.build());
-  }
-
-  private ScannedUserDefinedPicker scanUserDefinedPicker(final String[] regexCharacters,
-      final int index) {
-    String key = "";
-    String character;
-    List<String> buffer = new ArrayList<>();
-
-    int i = index;
-    while (!(character = regexCharacters[++i]).equals("]")) {
-      // Scan string which is in brackets to determine name of key and code range
-      if (character.equals("-") && !buffer.isEmpty()) {
-        String beginCharacter = buffer.get(buffer.size() - 1);
-        String endCharacter = regexCharacters[++i];
-        key += beginCharacter + "-" + endCharacter;
-        buffer.add(endCharacter);
-      } else {
-        if (String.valueOf(character).matches("\\W")) {
-          throw new RuntimeException("'" + character + "'"
-              + "will be treated literally inside []");
-        }
-        buffer.add(character);
-      }
-    }
-
-    return new ScannedUserDefinedPicker(i, key, buffer);
-  }
-
 }
