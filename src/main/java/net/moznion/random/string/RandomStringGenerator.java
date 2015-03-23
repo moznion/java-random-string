@@ -1,5 +1,7 @@
 package net.moznion.random.string;
 
+import lombok.Getter;
+
 import net.moznion.random.string.RandomLetterPicker.Builder;
 
 import java.util.ArrayList;
@@ -16,32 +18,31 @@ import java.util.stream.Collectors;
  * Generator of random string.
  * 
  * <p>
- * This class doesn't generate secure strings.
- * So please use SecureRandom class if you want to use with such a purpose.
+ * This class doesn't generate secure strings. So please use SecureRandom class if you want to use
+ * with such a purpose.
  * 
  * @author moznion
  *
  */
 public class RandomStringGenerator {
   private int numOfUpperLimit;
-  private final Map<String, RandomLetterPicker> definedPickers;
+  private final Map<String, RandomLetterPicker> userDefinedPickers;
   private final Random random;
   private final RandomLetterPickers pickers;
 
   private static final int DEFAULT_NUM_OF_UPPER_LIMIT = 10;
 
   /**
-   * Instantiate generator with a default number of upper limit for regex
-   * quantifiers (for example {@code *}, {@code +} and etc; default value: 10)
-   * and a default instance of Random.
+   * Instantiate generator with a default number of upper limit for regex quantifiers (for example
+   * {@code *}, {@code +} and etc; default value is 10) and a default instance of Random.
    */
   public RandomStringGenerator() {
     this(new Random(), DEFAULT_NUM_OF_UPPER_LIMIT);
   }
 
   /**
-   * Instantiate generator with a number of upper limit for regex quantifiers
-   * (for example {@code *}, {@code +} and etc) and a default instance of Random.
+   * Instantiate generator with a number of upper limit for regex quantifiers (for example {@code *}
+   * , {@code +} and etc) and a default instance of Random.
    * 
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */
@@ -50,9 +51,8 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Instantiate generator with a default number of upper limit for regex
-   * quantifiers (for example {@code *}, {@code +} and etc; default value is 10)
-   * and an instance of Random.
+   * Instantiate generator with a default number of upper limit for regex quantifiers (for example
+   * {@code *}, {@code +} and etc; default value is 10) and an instance of Random.
    *
    * @param random Instance of Random
    */
@@ -61,8 +61,8 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Instantiate generator with a number of upper limit for regex quantifiers
-   * (for example {@code *}, {@code +} and etc) and an instance of Random.
+   * Instantiate generator with a number of upper limit for regex quantifiers (for example {@code *}
+   * , {@code +} and etc) and an instance of Random.
    *
    * @param random Instance of Random
    * @param numOfUpperLimit Number of upper limit for quantifiers
@@ -70,7 +70,7 @@ public class RandomStringGenerator {
   public RandomStringGenerator(Random random, int numOfUpperLimit) {
     this.numOfUpperLimit = numOfUpperLimit;
     this.random = random;
-    this.definedPickers = new HashMap<>();
+    this.userDefinedPickers = new HashMap<>();
     this.pickers = new RandomLetterPickers(this.random);
   }
 
@@ -150,7 +150,7 @@ public class RandomStringGenerator {
    * <li>{@code \S} : Printable characters</li>
    * <li>{@code .} : Printable characters</li>
    * <li>{@code []} : Character classes (Example of usage {@code [a-zA-Z]})</li>
-   * <li>{@code {}}: Repetition</li>
+   * <li><code>{}</code>: Repetition</li>
    * <li>{@code *} : Same as {0,}</li>
    * <li>{@code ?} : Same as {0,1}</li>
    * <li>{@code +} : Same as {1,}</li>
@@ -214,42 +214,16 @@ public class RandomStringGenerator {
           }
           break;
         case "[":
-          List<String> buffer = new ArrayList<>();
           try {
-            String key = "";
-            while (!(character = regexCharacters[++i]).equals("]")) {
-              // Scan string which is in brackets to determine name of key and code range
-              if (character.equals("-") && !buffer.isEmpty()) {
-                String beginCharacter = buffer.get(buffer.size() - 1);
-                String endCharacter = regexCharacters[++i];
-                key += beginCharacter + "-" + endCharacter;
-                buffer.add(endCharacter);
-              } else {
-                if (String.valueOf(character).matches("\\W")) {
-                  throw new RuntimeException("'" + character + "'"
-                      + "will be treated literally inside []");
-                }
-                buffer.add(character);
-              }
+            ScannedUserDefinedPicker scannedUserDefinedPicker = scanUserDefinedPicker(regexCharacters, i);
+            String key = scannedUserDefinedPicker.getKey();
+            i = scannedUserDefinedPicker.getCursor();
+
+            if (userDefinedPickers.get(key) == null) {
+              registerUserDefinedPicker(key, scannedUserDefinedPicker.getScanned());
             }
 
-            if (definedPickers.get(key) == null) {
-              // build random letter picker according to determined range at above
-              Builder definedPickerBuilder = RandomLetterPicker.builder();
-              int bufferSize = buffer.size();
-              for (int j = 0; j < bufferSize; j += 2) {
-                int beginCode = (int) buffer.get(j).charAt(0);
-                int endCode = (int) buffer.get(j + 1).charAt(0);
-                if (beginCode > endCode) {
-                  throw new RuntimeException("Detected invalid character range: " + character);
-                }
-                for (int k = beginCode; k <= endCode; k++) {
-                  definedPickerBuilder.add(String.valueOf((char) k));
-                }
-              }
-              definedPickers.put(key, definedPickerBuilder.build());
-            }
-            picker = definedPickers.get(key);
+            picker = userDefinedPickers.get(key);
           } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Occurs parsing error");
           }
@@ -300,8 +274,7 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Get number of upper limit for regex quantifiers,
-   * for example {@code *}, {@code +} and etc.
+   * Get number of upper limit for regex quantifiers, for example {@code *}, {@code +} and etc.
    * 
    * @return Number of upper limit for quantifiers
    */
@@ -310,8 +283,7 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Set number of upper limit for regex quantifiers,
-   * for example {@code *}, {@code +} and etc.
+   * Set number of upper limit for regex quantifiers, for example {@code *}, {@code +} and etc.
    * 
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */
@@ -378,4 +350,64 @@ public class RandomStringGenerator {
     }
     return Integer.toString(random.nextInt(bound + 1) + start, 10);
   }
+
+  @Getter
+  private static class ScannedUserDefinedPicker {
+    private final int cursor;
+    private final String key;
+    private final List<String> scanned;
+
+    public ScannedUserDefinedPicker(int cursorForScanning, String key, List<String> scanned) {
+      this.cursor = cursorForScanning;
+      this.key = key;
+      this.scanned = scanned;
+    }
+  }
+
+  private void registerUserDefinedPicker(String key, List<String> buffer) {
+    Builder definedPickerBuilder = RandomLetterPicker.builder();
+    int bufferSize = buffer.size();
+
+    for (int i = 0; i < bufferSize; i += 2) {
+      int beginCode = (int) buffer.get(i).charAt(0);
+      int endCode = (int) buffer.get(i + 1).charAt(0);
+      if (beginCode > endCode) {
+        throw new RuntimeException("Detected invalid character range: ["
+            + (char) beginCode + "-" + (char) endCode + "]");
+      }
+
+      for (int code = beginCode; code <= endCode; code++) {
+        definedPickerBuilder.add(String.valueOf((char) code));
+      }
+    }
+
+    userDefinedPickers.put(key, definedPickerBuilder.build());
+  }
+
+  private ScannedUserDefinedPicker scanUserDefinedPicker(final String[] regexCharacters,
+      final int index) {
+    String key = "";
+    String character;
+    List<String> buffer = new ArrayList<>();
+
+    int i = index;
+    while (!(character = regexCharacters[++i]).equals("]")) {
+      // Scan string which is in brackets to determine name of key and code range
+      if (character.equals("-") && !buffer.isEmpty()) {
+        String beginCharacter = buffer.get(buffer.size() - 1);
+        String endCharacter = regexCharacters[++i];
+        key += beginCharacter + "-" + endCharacter;
+        buffer.add(endCharacter);
+      } else {
+        if (String.valueOf(character).matches("\\W")) {
+          throw new RuntimeException("'" + character + "'"
+              + "will be treated literally inside []");
+        }
+        buffer.add(character);
+      }
+    }
+
+    return new ScannedUserDefinedPicker(i, key, buffer);
+  }
+
 }
