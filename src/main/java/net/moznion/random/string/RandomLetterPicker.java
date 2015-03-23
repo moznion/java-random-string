@@ -17,9 +17,11 @@ class RandomLetterPicker {
   @Getter
   public static class Builder {
     private List<String> letters;
+    private Random random;
 
     public Builder() {
       letters = new ArrayList<>();
+      random = null;
     }
 
     public <E extends Enum<E> & Letter> Builder addAllByEnum(Class<E> enumClass) {
@@ -46,8 +48,13 @@ class RandomLetterPicker {
       return this;
     }
 
+    public Builder setRandom(Random random) {
+      this.random = random;
+      return this;
+    }
+
     public RandomLetterPicker build() {
-      return new RandomLetterPicker(letters);
+      return new RandomLetterPicker(this);
     }
   }
 
@@ -55,11 +62,15 @@ class RandomLetterPicker {
     return new Builder();
   }
 
-  private RandomLetterPicker(List<String> letters) {
-    this.letters = Collections.unmodifiableList(letters);
+  private RandomLetterPicker(Builder b) {
+    letters = Collections.unmodifiableList(b.getLetters());
+    if (b.getRandom() == null) {
+      random = new Random();
+    } else {
+      random = b.getRandom();
+    }
 
     size = letters.size();
-    random = new Random();
   }
 
   public String pickRandomLetter() {

@@ -21,8 +21,10 @@ import java.util.stream.Collectors;
 public class RandomStringGenerator {
   private int numOfUpperLimit;
   private final Map<String, RandomLetterPicker> definedPickers;
+  private final Random random;
+  private final RandomLetterPickers pickers;
 
-  private static final Random RANDOM = new Random();
+  private static final int DEFAULT_NUM_OF_UPPER_LIMIT = 10;
 
   /**
    * Instantiate generator with number of upper limit for regex quantifiers,
@@ -31,8 +33,7 @@ public class RandomStringGenerator {
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */
   public RandomStringGenerator(int numOfUpperLimit) {
-    this.numOfUpperLimit = numOfUpperLimit;
-    this.definedPickers = new HashMap<>();
+    this(new Random(), numOfUpperLimit);
   }
 
   /**
@@ -40,7 +41,18 @@ public class RandomStringGenerator {
    * quantifiers, for example {@code *}, {@code +} and etc (default value: 10).
    */
   public RandomStringGenerator() {
-    this(10);
+    this(new Random(), DEFAULT_NUM_OF_UPPER_LIMIT);
+  }
+
+  public RandomStringGenerator(Random random) {
+    this(random, DEFAULT_NUM_OF_UPPER_LIMIT);
+  }
+
+  public RandomStringGenerator(Random random, int numOfUpperLimit) {
+    this.numOfUpperLimit = numOfUpperLimit;
+    this.random = random;
+    this.definedPickers = new HashMap<>();
+    this.pickers = new RandomLetterPickers(this.random);
   }
 
   /**
@@ -78,25 +90,25 @@ public class RandomStringGenerator {
       RandomLetterPicker picker;
       switch (patternCharacter) {
         case "c":
-          picker = RandomLetterPickers.LOWER_CASE.getPicker();
+          picker = pickers.getLowerCase();
           break;
         case "C":
-          picker = RandomLetterPickers.UPPER_CASE.getPicker();
+          picker = pickers.getUpperCase();
           break;
         case "n":
-          picker = RandomLetterPickers.DIGIT.getPicker();
+          picker = pickers.getDigit();
           break;
         case "!":
-          picker = RandomLetterPickers.SYMBOL.getPicker();
+          picker = pickers.getSymbol();
           break;
         case ".":
-          picker = RandomLetterPickers.ANY.getPicker();
+          picker = pickers.getAny();
           break;
         case "s":
-          picker = RandomLetterPickers.SALT.getPicker();
+          picker = pickers.getSalt();
           break;
         case "b":
-          picker = RandomLetterPickers.BINARY.getPicker();
+          picker = pickers.getBinary();
           break;
         default:
           throw new RuntimeException("Detected invalid pattern character: " + patternCharacter);
@@ -161,22 +173,22 @@ public class RandomStringGenerator {
 
           switch (character) {
             case "w":
-              picker = RandomLetterPickers.WORD.getPicker();
+              picker = pickers.getWord();
               break;
             case "d":
-              picker = RandomLetterPickers.DIGIT.getPicker();
+              picker = pickers.getDigit();
               break;
             case "W":
-              picker = RandomLetterPickers.NOT_WORD.getPicker();
+              picker = pickers.getNotWord();
               break;
             case "D":
-              picker = RandomLetterPickers.NOT_DIGIT.getPicker();
+              picker = pickers.getNotDigit();
               break;
             case "s":
-              picker = RandomLetterPickers.SPACE.getPicker();
+              picker = pickers.getSpace();
               break;
             case "S":
-              picker = RandomLetterPickers.ANY.getPicker();
+              picker = pickers.getAny();
               break;
             default:
               candidateCharacter = character;
@@ -224,7 +236,7 @@ public class RandomStringGenerator {
           }
           break;
         case ".":
-          picker = RandomLetterPickers.ANY.getPicker();
+          picker = pickers.getAny();
           break;
         default:
           candidateCharacter = character;
@@ -345,6 +357,6 @@ public class RandomStringGenerator {
     if (bound < 0) {
       throw new RuntimeException("Detected invalid quantifier: " + "{" + start + "," + end + "}");
     }
-    return Integer.toString(RANDOM.nextInt(bound + 1) + start, 10);
+    return Integer.toString(random.nextInt(bound + 1) + start, 10);
   }
 }

@@ -2,74 +2,94 @@ package net.moznion.random.string;
 
 import lombok.Getter;
 
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-enum RandomLetterPickers {
-  UPPER_CASE(RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .build()),
+@Getter
+class RandomLetterPickers {
+  private final RandomLetterPicker upperCase;
+  private final RandomLetterPicker lowerCase;
+  private final RandomLetterPicker digit;
+  private final RandomLetterPicker symbol;
+  private final RandomLetterPicker any;
+  private final RandomLetterPicker salt;
+  private final RandomLetterPicker binary;
+  private final RandomLetterPicker word;
+  private final RandomLetterPicker notWord;
+  private final RandomLetterPicker notDigit;
+  private final RandomLetterPicker space;
 
-  LOWER_CASE(RandomLetterPicker.builder()
-      .addAllByEnum(LowerCaseLetter.class)
-      .build()),
+  public RandomLetterPickers(Random random) {
+    upperCase = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(UpperCaseLetter.class)
+        .build();
 
-  DIGIT(RandomLetterPicker.builder()
-      .addAllByEnum(DigitLetter.class)
-      .build()),
+    lowerCase = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(LowerCaseLetter.class)
+        .build();
 
-  SYMBOL(RandomLetterPicker.builder()
-      .addAllByEnum(SymbolLetter.class)
-      .build()),
+    digit = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(DigitLetter.class)
+        .build();
 
-  ANY(RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .addAllByEnum(SymbolLetter.class)
-      .build()),
+    symbol = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(SymbolLetter.class)
+        .build();
 
-  SALT(RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .add(".")
-      .add("/")
-      .build()),
+    any = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(UpperCaseLetter.class)
+        .addAllByEnum(LowerCaseLetter.class)
+        .addAllByEnum(DigitLetter.class)
+        .addAllByEnum(SymbolLetter.class)
+        .build();
 
-  BINARY(RandomLetterPicker.builder()
-      .addAll(IntStream.range(0, 255)
-          .mapToObj(i -> Character.toString((char) i))
-          .collect(Collectors.toList()))
-      .build()),
+    salt = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(UpperCaseLetter.class)
+        .addAllByEnum(LowerCaseLetter.class)
+        .addAllByEnum(DigitLetter.class)
+        .add(".")
+        .add("/")
+        .build();
 
-  WORD(RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(DigitLetter.class)
-      .add("_")
-      .build()),
+    binary = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAll(IntStream.range(0, 255)
+            .mapToObj(i -> Character.toString((char) i))
+            .collect(Collectors.toList()))
+        .build();
 
-  NOT_WORD(RandomLetterPicker.builder()
-      .addAllByEnum(SymbolLetter.class)
-      .remove("_")
-      .build()),
+    word = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(UpperCaseLetter.class)
+        .addAllByEnum(LowerCaseLetter.class)
+        .addAllByEnum(DigitLetter.class)
+        .add("_")
+        .build();
 
-  NOT_DIGIT(RandomLetterPicker.builder()
-      .addAllByEnum(UpperCaseLetter.class)
-      .addAllByEnum(LowerCaseLetter.class)
-      .addAllByEnum(SymbolLetter.class)
-      .build()),
+    notWord = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(SymbolLetter.class)
+        .remove("_")
+        .build();
 
-  SPACE(RandomLetterPicker.builder()
-      .add(" ")
-      .add("\t")
-      .build());
+    notDigit = RandomLetterPicker.builder()
+        .setRandom(random)
+        .addAllByEnum(UpperCaseLetter.class)
+        .addAllByEnum(LowerCaseLetter.class)
+        .addAllByEnum(SymbolLetter.class)
+        .build();
 
-  @Getter
-  private RandomLetterPicker picker;
-
-  private RandomLetterPickers(RandomLetterPicker picker) {
-    this.picker = picker;
+    space = RandomLetterPicker.builder()
+        .setRandom(random)
+        .add(" ")
+        .add("\t")
+        .build();
   }
 }
