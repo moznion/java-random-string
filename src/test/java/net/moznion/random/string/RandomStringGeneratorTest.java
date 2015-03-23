@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 public class RandomStringGeneratorTest {
@@ -121,5 +122,17 @@ public class RandomStringGeneratorTest {
     RandomStringGenerator generator = new RandomStringGenerator(0);
     assertEquals(0, generator.getNumOfUpperLimit());
     assertEquals("XX", generator.generateByRegex("X.*X"));
+  }
+
+  @Test
+  public void forThreadLocalRandom() {
+    RandomStringGenerator generator = new RandomStringGenerator(ThreadLocalRandom.current());
+    String randomString =
+        generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
+    Pattern patternToProve =
+        Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
+            + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
+            + "a\\{0,3}.[ \t].[0-9][a-zA-Z]X$");
+    assertTrue(patternToProve.matcher(randomString).find());
   }
 }

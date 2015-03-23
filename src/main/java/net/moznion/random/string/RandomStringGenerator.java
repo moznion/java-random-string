@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 /**
  * Generator of random string.
  * 
+ * <p>
+ * This class doesn't generate secure strings.
+ * So please use SecureRandom class if you want to use with such a purpose.
+ * 
  * @author moznion
  *
  */
@@ -27,8 +31,17 @@ public class RandomStringGenerator {
   private static final int DEFAULT_NUM_OF_UPPER_LIMIT = 10;
 
   /**
-   * Instantiate generator with number of upper limit for regex quantifiers,
-   * for example {@code *}, {@code +} and etc.
+   * Instantiate generator with a default number of upper limit for regex
+   * quantifiers (for example {@code *}, {@code +} and etc; default value: 10)
+   * and a default instance of Random.
+   */
+  public RandomStringGenerator() {
+    this(new Random(), DEFAULT_NUM_OF_UPPER_LIMIT);
+  }
+
+  /**
+   * Instantiate generator with a number of upper limit for regex quantifiers
+   * (for example {@code *}, {@code +} and etc) and a default instance of Random.
    * 
    * @param numOfUpperLimit Number of upper limit for quantifiers
    */
@@ -37,17 +50,23 @@ public class RandomStringGenerator {
   }
 
   /**
-   * Instantiate generator with default number of upper limit for regex
-   * quantifiers, for example {@code *}, {@code +} and etc (default value: 10).
+   * Instantiate generator with a default number of upper limit for regex
+   * quantifiers (for example {@code *}, {@code +} and etc; default value is 10)
+   * and an instance of Random.
+   *
+   * @param random Instance of Random
    */
-  public RandomStringGenerator() {
-    this(new Random(), DEFAULT_NUM_OF_UPPER_LIMIT);
-  }
-
   public RandomStringGenerator(Random random) {
     this(random, DEFAULT_NUM_OF_UPPER_LIMIT);
   }
 
+  /**
+   * Instantiate generator with a number of upper limit for regex quantifiers
+   * (for example {@code *}, {@code +} and etc) and an instance of Random.
+   *
+   * @param random Instance of Random
+   * @param numOfUpperLimit Number of upper limit for quantifiers
+   */
   public RandomStringGenerator(Random random, int numOfUpperLimit) {
     this.numOfUpperLimit = numOfUpperLimit;
     this.random = random;
