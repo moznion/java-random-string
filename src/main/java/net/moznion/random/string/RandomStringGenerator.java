@@ -242,9 +242,7 @@ public class RandomStringGenerator {
             }
             try {
               repetitionNum = Integer.parseInt(sbForQuantifier.toString(), 10);
-              if (repetitionNum >= 0) {
-                i += j - 1;
-              }
+              i = j;
             } catch (RuntimeException e) {
               // do nothing
             }
