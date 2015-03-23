@@ -290,7 +290,7 @@ public class RandomStringGenerator {
 
   // for repetition quantifier, e.g. {1,4}
   private static final Pattern REPETITION_QUANTIFIER_RE =
-      Pattern.compile("([^\\\\])\\{([0-9]+),([0-9]+)\\}");
+      Pattern.compile("([^\\\\])\\{([0-9]+),([0-9]+)?\\}");
   private static final Pattern ASTERISK_QUANTIFIER_RE = Pattern.compile("([^\\\\])\\*");
   private static final Pattern PLUS_QUANTIFIER_RE = Pattern.compile("([^\\\\])\\+");
   private static final Pattern QUESTION_QUANTIFIER_RE = Pattern.compile("([^\\\\])\\?");
@@ -301,9 +301,11 @@ public class RandomStringGenerator {
     Matcher repetitionMatcher = REPETITION_QUANTIFIER_RE.matcher(expanded);
     while (repetitionMatcher.find()) {
       int start = Integer.parseInt(repetitionMatcher.group(2), 10);
-      int end = Integer.parseInt(repetitionMatcher.group(3), 10);
-      if (end - start < 0) {
-        throw new RuntimeException("Detected invalid quantifier: " + "{" + start + "," + end + "}");
+      int end;
+      if (repetitionMatcher.group(3) == null) {
+        end = numOfUpperLimit;
+      } else {
+        end = Integer.parseInt(repetitionMatcher.group(3), 10);
       }
       expanded =
           repetitionMatcher.replaceFirst(repetitionMatcher.group(1) + "{"
@@ -339,6 +341,10 @@ public class RandomStringGenerator {
   }
 
   private String getRandomNumAsString(final int start, final int end) {
-    return Integer.toString(RANDOM.nextInt(end + 1) + start, 10);
+    int bound = end - start;
+    if (bound < 0) {
+      throw new RuntimeException("Detected invalid quantifier: " + "{" + start + "," + end + "}");
+    }
+    return Integer.toString(RANDOM.nextInt(bound + 1) + start, 10);
   }
 }

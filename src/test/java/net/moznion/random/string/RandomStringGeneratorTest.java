@@ -47,6 +47,28 @@ public class RandomStringGeneratorTest {
       String randomString = generator.generateByRegex("a{");
       assertTrue(randomString.equals("a{"));
     }
+    {
+      String randomString = generator.generateByRegex("a{,1}");
+      assertTrue(randomString.equals("a{,1}"));
+    }
+  }
+
+  @Test
+  public void notSpecifiedDestinationAtBrace() {
+    {
+      RandomStringGenerator generator = new RandomStringGenerator(10);
+      assertEquals("aaaaaaaaaa", generator.generateByRegex("a{10,}"));
+    }
+    {
+      RandomStringGenerator generator = new RandomStringGenerator(10);
+      assertTrue(generator.generateByRegex("a{0,}").matches("a{0,10}"));
+    }
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void invalidNotSpecifiedDestionationAtBrace() {
+      RandomStringGenerator generator = new RandomStringGenerator(10);
+      generator.generateByRegex("a{100,}");
   }
 
   @Test(expected = RuntimeException.class)
