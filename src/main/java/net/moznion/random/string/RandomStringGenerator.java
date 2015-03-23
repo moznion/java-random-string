@@ -229,8 +229,8 @@ public class RandomStringGenerator {
                 }
               }
               definedPickers.put(key, definedPickerBuilder.build());
-              picker = definedPickers.get(key);
             }
+            picker = definedPickers.get(key);
           } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException("Occurs parsing error");
           }

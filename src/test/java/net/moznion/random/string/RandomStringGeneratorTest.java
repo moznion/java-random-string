@@ -27,13 +27,25 @@ public class RandomStringGeneratorTest {
   @Test
   public void shouldGenerateRandomStringFromRegex() {
     RandomStringGenerator generator = new RandomStringGenerator();
-    String randomString =
-        generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
-    Pattern patternToProve =
-        Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
-            + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
-            + "a\\{0,3}.[ \t].[0-9][a-zA-Z]X$");
-    assertTrue(patternToProve.matcher(randomString).find());
+    {
+      String randomString =
+          generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
+      Pattern patternToProve =
+          Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
+              + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
+              + "a\\{0,3}.[ \t].[0-9][a-zA-Z]X$");
+      assertTrue(patternToProve.matcher(randomString).find());
+    }
+    {
+      // regression test
+      String randomString =
+          generator.generateByRegex("\\w+\\d*\\W\\D{0,3}a\\{0,3}.\\s\\S[0-9][a-zA-Z]X");
+      Pattern patternToProve =
+          Pattern.compile("^[a-zA-Z0-9_]+[0-9]*[~`!@$%^&*()\\-+={}\\[\\]|\\\\:;\"'.<>?/#,]"
+              + "[a-zA-Z0-9~`!@$%^&*()\\-_+={}\\[\\]|\\\\:;\"'.<>?/#,]{0,3}"
+              + "a\\{0,3}.[ \t].[0-9][a-zA-Z]X$");
+      assertTrue(patternToProve.matcher(randomString).find());
+    }
   }
 
   @Test
@@ -67,8 +79,8 @@ public class RandomStringGeneratorTest {
 
   @Test(expected = RuntimeException.class)
   public void invalidNotSpecifiedDestionationAtBrace() {
-      RandomStringGenerator generator = new RandomStringGenerator(10);
-      generator.generateByRegex("a{100,}");
+    RandomStringGenerator generator = new RandomStringGenerator(10);
+    generator.generateByRegex("a{100,}");
   }
 
   @Test(expected = RuntimeException.class)
