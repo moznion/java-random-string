@@ -1,6 +1,6 @@
-random-string [![Build Status](https://travis-ci.org/moznion/java-random-string.svg)](https://travis-ci.org/moznion/java-random-string) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string) [![javadoc.io](https://javadocio-badges.herokuapp.com/net.moznion/random-string/badge.svg)](https://javadocio-badges.herokuapp.com/net.moznion/random-string)
+﻿random-string [![Build Status](https://travis-ci.org/moznion/java-random-string.svg)](https://travis-ci.org/moznion/java-random-string) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.moznion/random-string) [![javadoc.io](https://javadocio-badges.herokuapp.com/net.moznion/random-string/badge.svg)](https://javadocio-badges.herokuapp.com/net.moznion/random-string)
 =============
-
+Assaf
 Generate random strings based on a pattern.
 
 Synopsis
