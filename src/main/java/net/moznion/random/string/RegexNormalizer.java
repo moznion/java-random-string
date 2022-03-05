@@ -53,6 +53,7 @@ class RegexNormalizer {
               + getRandomNumAsString(1, numOfUpperLimit) + "}");
       plusMatcher = PLUS_QUANTIFIER_RE.matcher(expanded);
     }
+    
 
     Matcher questionMatcher = QUESTION_QUANTIFIER_RE.matcher(expanded);
     while (questionMatcher.find()) {
